@@ -1,0 +1,2 @@
+export const GET_ALL_PUBLIC_GIST = 'GET_ALL_PUBLIC_GIST';
+export const GET_USER_GIST = 'GET_USER_GIST';

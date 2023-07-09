@@ -6,7 +6,17 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
 
-const UserGistView = ({
+export type Props = {
+  userName: string;
+  createdAt: string;
+  updatedAt: string;
+  index: string;
+  imagePath: string;
+  desc: string;
+  fileLength: number;
+  fileArray : any[];
+};
+const UserGistView : React.FC<Props> = ({
   userName,
   createdAt,
   updatedAt,
@@ -17,7 +27,7 @@ const UserGistView = ({
   fileArray = [],
 }) => {
   
-  const antDesignIcon = (name, size) => {
+  const antDesignIcon = (name:string, size:number) => {
     return <AntDesign name={name} color={color.blue} size={size} />;
   };
 

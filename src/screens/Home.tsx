@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { color } from "../utills/colors";
 import { moderateScale } from "react-native-size-matters";
@@ -10,22 +10,24 @@ import { useSelector } from "react-redux";
 import d from "lodash";
 import axios from "axios";
 import { showToast } from "../components/Toast";
+import { IUser } from "../Types";
 
 const HomeScreen = () => {
   //custom hook to get all userGist
   const { loading: loading, data: gistData } = useAllGist();
-  const reduxGistData = useSelector((state) => state.gist.allGist);
+  const reduxGistData = useSelector((state:any) => state.gist.allGist);
   const [serachText, setSearchText] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
   const [serachResult, setSearchResult] = useState([]);
-
+  
   //this method will wait half second to execute so the user can easily type a proper name in search
   const handler = React.useMemo(
     () => d.debounce((searchText) => getSearchDetail(searchText), 500),
     []
   );
+  
 
-  const getSearchDetail = async (searchText) => {
+  const getSearchDetail = async (searchText:string) => {
     try {
       setSearchLoading(true);
       const response = await axios.get(
@@ -33,19 +35,18 @@ const HomeScreen = () => {
       );
       setSearchResult(response.data);
     } catch (error) {
-      console.log(error);
       showToast("No Gist Found");
     } finally {
       setSearchLoading(false);
     }
   };
-  const renderItem = ({ item, index }) => {
+  const renderItem = ({ item, index }: {item: IUser,index:number}) => {
     //to format date
     let CDAte = new Date(item.created_at).toLocaleDateString("en-US");
     let UDAte = new Date(item.updated_at).toLocaleDateString("en-US");
 
     let files = Object.entries(item.files);
-    let fileArray = [];
+    let fileArray: any[] = [];
     let fileLength = files.map((key) => {
       fileArray.push(key[0]);
     });
@@ -58,9 +59,9 @@ const HomeScreen = () => {
         createdAt={"Created at: " + CDAte}
         updatedAt={"  Updated at: " + UDAte}
         desc={item.description}
-        fileLength={fileLength.length || "0"}
-        fileArray={fileArray}
-      />
+        fileLength={fileLength.length || 0}
+        fileArray={fileArray} 
+        />
     );
   };
 
@@ -71,7 +72,7 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <Header
-        onChange={(text) => {
+        onChange={(text:string) => {
           setSearchText(text);
           handler(text);
         }}
@@ -82,15 +83,15 @@ const HomeScreen = () => {
         <FlatList
           data={serachText ? serachResult : reduxGistData}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={(item, index) => renderItem(item, index)}
+          renderItem={(item: { item: IUser },index:{index: number;}) => renderItem(item, index)}
           initialNumToRender={7}
           maxToRenderPerBatch={10}
           removeClippedSubviews={true}
-          ListEmptyComponent={() => {
-            <View>
-              <Text style={styles.emptyText}>No Gist Found</Text>
-            </View>;
-          }}
+          // ListEmptyComponent={() => {
+          //   <View>
+          //     <Text style={styles.emptyText}>No Gist Found</Text>
+          //   </View>;
+          // }}
         />
       </View>
     </View>
